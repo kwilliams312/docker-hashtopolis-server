@@ -22,7 +22,20 @@ RUN	export DEBIAN_FRONTEND=noninteractive && \
 	echo "ServerName Hashtopolis" > /etc/apache2/conf-enabled/serverName.conf && \
 	rm -rf /var/lib/apt-get /var/lib/dpkg /var/cache/apt-get /usr/share/doc /usr/share/man /usr/share/info
 
+# need to increase the php max file upload size
+#upload
+RUN echo "file_uploads = On\n" \
+         "memory_limit = 1024M\n" \
+         "upload_max_filesize = 1024M\n" \
+         "post_max_size = 1024M\n" \
+         "max_execution_time = 600\n" \
+         > /usr/local/etc/php/conf.d/uploads.ini
 WORKDIR /var/www/html
 
+COPY start_hashtopolis.sh /usr/local/bin
+RUN chmod u+x /usr/local/bin/start_hashtopolis.sh
+RUN rm -rf /var/www/html/install
+
 EXPOSE 80
-CMD ["apache2-foreground"]
+#CMD ["apache2-foreground"]
+CMD ["start_hashtopolis.sh"]
